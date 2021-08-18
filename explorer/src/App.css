@@ -1,0 +1,62 @@
+html, body, #root {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.element {
+	margin: .25rem;
+	padding: .5rem;
+	cursor: pointer;
+}
+.element-selected {
+	background-color: #F3F4F6;
+	border-radius: .25rem;
+}
+.element-pct {
+	width: 2rem; 
+	min-width: 2rem;
+	height: .8rem; 
+	margin-right: .5rem;
+	background: #34D399; 
+}
+.element-pct-bar {
+	background: #D1D5DB;
+	height: .8rem;
+}
+.element-level {
+	min-width:1px; 
+	background-color: grey; 
+	margin-right: .4rem; 
+	margin-left: 0.4rem;
+}
+.element-level-first {
+	margin-top: .4rem;
+}
+.element-level-last {
+	margin-bottom: .4rem;
+}
+.element-name-outer {
+	padding: .6rem .2rem; 
+	margin:0;
+}
+.element-name {
+	margin:0;
+	padding:0;
+}
+.element-type {
+	margin-left: 1rem;
+}
+.element-name a:hover {
+	text-decoration: none;
+}
+tr {
+	padding: 0;
+	margin: 0;
+}
+td {
+	height: inherit;
+	vertical-align: middle;
+	padding: 0 .5rem;
+	margin: 0;
+}
