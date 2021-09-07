@@ -103,6 +103,94 @@ describe("aggregate element summary", () => {
 
 });
 
+describe("contained element types", () => {
+
+	test("include data types in contained resource", () => {
+		const resource = {resourceType: "Observation", 
+			contained: [{
+				resourceType: "Patient",
+				birthDate: "2020-01-01"
+			}]
+		};
+		const definitions = {
+			"Observation.contained": {type: "Resource", pos: 0},
+			"Patient.birthDate": {type: "date", pos: 2}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.summary.unstratified["Observation.contained.Patient"].fhirType
+		).toEqual("Patient");
+		expect(
+			data.summary.unstratified["Observation.contained.Patient"].count
+		).toEqual(1);
+		expect(
+			data.summary.unstratified["Observation.contained.Patient.birthDate"].fhirType
+		).toEqual("date");
+	});
+
+	test("include data types for contained resource without resourceType", () => {
+		const resource = {resourceType: "Observation", 
+			contained: [{
+				birthDate: "2020-01-01"
+			}]
+		};
+		const definitions = {
+			"Observation.contained": {type: "Resource", pos: 0},
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.summary.unstratified["Observation.contained.birthDate"].count
+		).toEqual(1);
+	});
+
+	test("include data types in multiple contained resources", () => {
+		const resource = {resourceType: "Observation", 
+			contained: [{
+				resourceType: "Patient",
+				birthDate: "2020-01-01"
+			},{
+				resourceType: "Patient",
+				birthDate: "2020-01-01"
+			}]
+		};
+		const definitions = {
+			"Observation.contained": {type: "Resource", pos: 0},
+			"Patient.birthDate": {type: "date", pos: 2}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.summary.unstratified["Observation.contained.Patient.birthDate"].count
+		).toEqual(2);
+	});
+
+	test("include data types in multiple types of contained resources", () => {
+		const resource = {resourceType: "Observation", 
+			contained: [{
+				resourceType: "Patient",
+				birthDate: "2020-01-01"
+			}, {
+				resourceType: "Practitioner",
+				gender: "male"
+			}]
+		};
+		const definitions = {
+			"Observation.contained": {type: "Resource", pos: 0},
+			"Patient.birthDate": {type: "date", pos: 2},
+			"Practitioner.gender": {type: "string", pos: 2}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.summary.unstratified["Observation.contained.Patient.birthDate"].fhirType
+		).toEqual("date");
+		expect(
+			data.summary.unstratified["Observation.contained.Practitioner.gender"].fhirType
+		).toEqual("string");
+	});
+
+
+});
+
+
 describe("impute element types", () => {
 
 	test("impute date type", () => {

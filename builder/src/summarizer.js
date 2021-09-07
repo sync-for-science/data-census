@@ -35,12 +35,16 @@ function pathToFhirType(path, definitions) {
 		if (segment[0] === "_")
 			return pathDefinition = "primitiveType";
 
+		//shortcut since add resource type to path for contained resources
+		if (pathSegments[i-1] === "contained" && pathDefinition.type[0] === pathDefinition.type[0].toUpperCase())
+			return typePath = [segment];
+
 		pathDefinition = definitions[typePath.concat(segment).join(".")];
 		if (!pathDefinition) return;
 
 		if (pathDefinition.contentReference) {
 			typePath = [pathDefinition.contentReference];
-		} else if (pathDefinition.type !== "BackboneElement" && pathDefinition.type[0] === pathDefinition.type[0].toUpperCase()) {
+		} else if (pathDefinition.type !== "BackboneElement" && pathDefinition.type !== "Element" && pathDefinition.type[0] === pathDefinition.type[0].toUpperCase()) {
 			typePath = [pathDefinition.type];
 		} else {
 			typePath = typePath.concat(segment);
@@ -53,7 +57,6 @@ function pathToFhirType(path, definitions) {
 
 
 function summarizeResource(resource, definitions={}, stratifyFn, summary={}, skipDetails=[]) {
-
 	const resourceType = resource.resourceType;
 	const stratification = stratifyFn ? stratifyFn(resource) : "unstratified";
 	let elementPos = -1; //track relative position in case no fhir definition files
@@ -61,9 +64,18 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 	const summarizeElement = (element, path, parentExtension, isArray) => {
 
 		elementPos++;
-		const fhirDefinition = pathToFhirType(path.join("."), definitions);
+		let fhirDefinition = pathToFhirType(path.join("."), definitions);
 		let fhirType = fhirDefinition ? fhirDefinition.type : undefined;
-		const pathString = path.join(".");
+		let pathString = path.join(".");
+
+		//handle contained resources		
+		if (fhirType === "Resource" && element.resourceType) {
+			fhirType = element.resourceType;
+			path = path.concat([element.resourceType]);
+			pathString = path.join(".");
+			fhirDefinition = pathToFhirType(path.join("."), definitions);
+			isArray = false;
+		}
 
 		//try to impute date type - ignores dates without a day value
 		if (!fhirType && _.isString(element) && /^\d{4}-\d{2}-\d{2}(T|$)/.test(element))
@@ -119,15 +131,12 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 		}
 		
 		_.set(summary,  ["summary", stratification, pathString, "fhirType"], fhirType);
-
 		const prevPosition = _.get(summary,  ["summary", stratification, pathString, "position"]);
 		if (!prevPosition) {
 			_.set(summary,  ["summary", stratification, pathString, "position"], 
 				fhirDefinition ? fhirDefinition.pos : elementPos)
 		}
 	
-
-
 		if (!isArray) {
 			const currentCount = _.get(summary, ["summary", stratification, pathString, "count"], 0);
 			_.set(summary,  ["summary", stratification, pathString, "count"], currentCount+1);
@@ -166,8 +175,23 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 			addDateDetail(element);
 
 		if (fhirType === "Reference" && skipDetails.indexOf("reference") === -1) {
-			const id = element.type || (element.reference && element.reference.split("/").slice(-2, 1));
-			addDetail("reference", id);
+			let targetType = element.type;
+			//type, no url
+			if (targetType && !element.reference) 
+				targetType += " (No URL)";
+			//type and contained
+			if (targetType && element.reference && element.reference[0] === "#")
+				targetType += " (Contained)";
+			//no type, no url
+			if (!targetType && !element.reference) 
+				targetType = "No Resource URL";
+			//no type, contained
+			if (!targetType && element.reference && element.reference[0] === "#")
+				targetType = "Contained Resource";
+			//no type, url
+			if (!targetType && element.reference) 
+				targetType = element.reference.split("/")[element.reference.split("/").length-2];
+			addDetail("reference", targetType);
 		}
 
 		if (fhirType === "Address" && element.postalCode && skipDetails.indexOf("address") === -1) {
