@@ -299,6 +299,78 @@ describe("aggregate element detail", () => {
 		).toEqual(1);
 	});
 
+	test("References by type (relative url)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {reference: "Practitioner/123"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference.Practitioner.count
+		).toEqual(1);
+	});
+
+	test("References by type (absolute url)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {reference: "http://test.com/Practitioner/123"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference.Practitioner.count
+		).toEqual(1);
+	});
+
+	test("References by type (no url no type)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {display: "Mr. 123"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference["No Resource URL"].count
+		).toEqual(1);
+	});
+
+	test("References by type (no url with type)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {display: "Mr. 123", type: "Practitioner"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference["Practitioner (No URL)"].count
+		).toEqual(1);
+	});
+
+	test("References by type (contained)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {reference: "#123"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference["Contained Resource"].count
+		).toEqual(1);
+	});
+
+	test("References by type (contained, with type)", () => {
+		const resource = {resourceType: "Patient", generalPractitioner: {reference: "#123", type: "Practitioner"} };
+		const definitions = {
+			"Patient.generalPractitioner": {type: "Reference"},
+			"Patient.generalPractitioner.reference": {type: "string"}
+		};
+		const data = summarizer.summarizeResource(resource, definitions);
+		expect(
+			data.detail.unstratified["Patient.generalPractitioner"].reference["Practitioner (Contained)"].count
+		).toEqual(1);
+	});
+
 	test("Coding system and code", () => {
 		const resource = {
 			resourceType: "Observation",

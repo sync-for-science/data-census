@@ -3,6 +3,7 @@ import ElementMetrics from "./ElementMetrics";
 import CodingTreeMap from "./CodingTreeMap";
 import DateHeatMap from "./DateHeatMap";
 import DatePrecision from "./DatePrecision";
+import ReferenceTargets from "./ReferenceTargets";
 
 function ElementDetailPanel({detailData, currentElement}) {
 
@@ -19,7 +20,10 @@ function ElementDetailPanel({detailData, currentElement}) {
 		elementDetailData.find( d => d.detailType === "coding");
 
 	const hasDateDetail = elementDetailData &&
-		elementDetailData.find( d => d.detailType === "date")
+		elementDetailData.find( d => d.detailType === "date");
+
+	const hasReferenceDetail = elementDetailData &&
+		elementDetailData.find( d => d.detailType === "reference");
 
 	if (!elementDetailData || !currentElement) return <div></div>
 	
@@ -35,8 +39,11 @@ function ElementDetailPanel({detailData, currentElement}) {
 			<DatePrecision detailData={elementDetailData} />
 			<DateHeatMap data={elementDetailData} />
 		</div>}
+		{currentElement && hasReferenceDetail && <div>
+			<ReferenceTargets detailData={elementDetailData} />
+		</div>}
+
 	</div>
-	
 
 
 }
