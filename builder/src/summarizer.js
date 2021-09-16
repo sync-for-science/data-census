@@ -106,6 +106,10 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 			}
 		}
 
+		const markAsHasDetail = () => {
+			_.set(summary,  ["summary", stratification, pathString, "hasDetail"], true);
+		}
+
 		const addDateDetail = (fromDate, toDate) => {
 			const precision = ["Y", "m", "d", "H", "M", "S", "f", "z", "z", "z"][fromDate.split(/[-:.TZ]/g).length-1];
 			addDetail("datePrecision", precision);
@@ -124,6 +128,7 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 				}
 			} else if (fromMonth) {
 				addDetail("date", [fromYear, fromMonth].join("-"));
+				markAsHasDetail();
 			} else {
 				_.range(1, 13).map( month => addDetail("date", [fromYear, month].join("-")) );
 			}
@@ -152,12 +157,14 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 		if ((fhirType === "Coding" || fhirType === "Quantity" || fhirType === "Identifier") && skipDetails.indexOf("coding") === -1) {
 			const id = [element.system||"", element.code||""].join("|");
 			addDetail("coding", id, element.display);
+			markAsHasDetail();
 		}
 
 		if ((fhirType === "code") && skipDetails.indexOf("coding") === -1) {
 			const parentDefinition = pathToFhirType(path.slice(0, path.length-1).join("."), definitions);
 			if (!parentDefinition || ["Coding", "Quantity", "Identifier"].indexOf(parentDefinition.type) === -1) {
 				addDetail("coding", "|" + element, element.display);
+				markAsHasDetail();
 			}
 		}
 	
@@ -192,6 +199,7 @@ function summarizeResource(resource, definitions={}, stratifyFn, summary={}, ski
 			if (!targetType && element.reference) 
 				targetType = element.reference.split("/")[element.reference.split("/").length-2];
 			addDetail("reference", targetType);
+			markAsHasDetail();
 		}
 
 		if (fhirType === "Address" && element.postalCode && skipDetails.indexOf("address") === -1) {

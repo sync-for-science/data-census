@@ -47,6 +47,9 @@ html, body, #root {
 .element-type {
 	margin-left: 1rem;
 }
+.element-has-detail {
+	font-weight: bold;
+}
 .element-name a:hover {
 	text-decoration: none;
 }

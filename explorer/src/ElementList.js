@@ -16,6 +16,7 @@ function ElementList({data, ...props}) {
 		
 		const pct = (el.count/el.parentCount||0)*100;
 		const parentTitle = (el.level === 0) ? "resource" : "parent";
+		const fhirTypeClass = el.hasDetail ? "element-type element-has-detail" : "element-type";
 		return <tr key={el.elementPath} id={el.elementPath} 
 			className={el.elementPath === props.selectedElement ? "element element-selected" : "element"}
 			onClick={handleClick}
@@ -35,7 +36,7 @@ function ElementList({data, ...props}) {
 					<button className="element-name btn btn-link p-0" title={el.elementPath}>{el.display}</button>
 				</div>
 			</td>
-			<td className="element-type">{el.fhirType}{el.instanceCount !== undefined ? "[ ]" : ""}</td>
+			<td className={fhirTypeClass}>{el.fhirType}{el.instanceCount !== undefined ? "[ ]" : ""}</td>
 		</tr>
 	}
 
