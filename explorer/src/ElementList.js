@@ -35,7 +35,7 @@ function ElementList({data, ...props}) {
 					<button className="element-name btn btn-link p-0" title={el.elementPath}>{el.display}</button>
 				</div>
 			</td>
-			<td className="element-type">{el.fhirType}</td>
+			<td className="element-type">{el.fhirType}{el.instanceCount !== undefined ? "[ ]" : ""}</td>
 		</tr>
 	}
 
