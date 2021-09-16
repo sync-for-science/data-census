@@ -55,6 +55,7 @@ function ElementMetrics({element, detailData}) {
 	}
 
 	const pct = Math.round((element.count/element.parentCount)*100);
+	const hasRange = instanceMetrics && instanceMetrics.min !== instanceMetrics.max;
 
 	return <div>
 
@@ -90,11 +91,11 @@ function ElementMetrics({element, detailData}) {
 						<div>
 							<h2 className="mb-0" style={{color: "#059669", fontWeight: 700}}>
 								<span>{ addCommas(instanceMetrics.median) }</span>
-								{instanceMetrics.min !== instanceMetrics.max && 
+								{hasRange && 
 									<span style={{fontSize: "50%"}}> (range of {instanceMetrics.min}-{instanceMetrics.max})</span>
 								}
 							</h2>
-							<div>median per parent</div>
+							<div>{hasRange ? "median " : ""}per parent</div>
 						</div>
 					</div>
 				</div>
