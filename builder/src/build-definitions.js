@@ -31,7 +31,11 @@ const buildBundle = (bundle) => {
 					const path = elem.type.length === 1
 						? elem.path
 						: elem.path.replace("[x]", type.code[0].toUpperCase() + type.code.slice(1));
-					const outputType = type.code === "http://hl7.org/fhirpath/System.String" ? "string" : type.code;
+					const typeExtension = type.extension && 
+						type.extension.find( ext => ext.url === "http://hl7.org/fhir/StructureDefinition/structuredefinition-fhir-type");
+					const outputType = typeExtension
+						? typeExtension.valueUrl
+						: type.code === "http://hl7.org/fhirpath/System.String" ? "string" : type.code;
 					const isArray =  elem.max !== "1" && elem.max !== "0";
 					const referenceTargets = type.targetProfile &&
 						type.targetProfile.map( profile => profile.split("/")[profile.split("/").length-1] );
