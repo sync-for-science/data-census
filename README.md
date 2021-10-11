@@ -62,7 +62,7 @@ npm run build -- -r [data-directory] -p [fhir-definition-directory]
 
 | Parameter | Short | Cardinality | Description |
 | - | -| - | - |
-| resources | r | 0..* | Path to a directory of FHIR resource files or a single FHIR resource file. File(s) may be FHIR Bundles in json format or FHIR Bulk Data files in ndjson format. Defaults to current directory. |
+| resources | r | 0..* | Path to a directory of FHIR resource files or a single FHIR resource file. File(s) may be FHIR Bundles in json format or FHIR Bulk Data files in ndjson format. Bulk ndjson files may optionally be gzipped. Defaults to current directory. |
 | profiles | p | 0..* | Path to FHIR profiles (`profiles-resources.json` and `profiles-types.json`). Census will attempt to impute some field types if this parameter is omitted. |
 | output | o | 0..1 | Output folder path (file will be created as `summary.json`) or path to a specific file name with a `.json` extension. Defaults to current directory. | 
 | stratify-by | s | 0..* | Stratification functions. Defaults to `obs_cat` to stratify Observation resources by category (pass a value of `none` to skip all stratification). See details below. |
