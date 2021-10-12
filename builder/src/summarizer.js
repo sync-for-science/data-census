@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const zlib = require('zlib');
 const readline = require('readline');
-const LineByLineReader = require('line-by-line');
 
 const builder = require("./build-definitions");
 
@@ -258,23 +257,6 @@ function flattenSummary(data) {
 	return {summary: flatSummary, detail: flatDetail};
 }
 
-function summarizeNDJSONGzip(filePath, definitions, stratifyFn, summary={}, skipDetails) {
-	return new Promise( (resolve, reject) => {
-		const rs = fs.createReadStream(filePath);
-		const gunzip = zlib.createGunzip();
-		const lr = readline.createInterface(rs.pipe(gunzip));
-		lr.on('error', err => {
-			lr.close();
-			reject(err);
-		});
-		lr.on('line', line => {
-			const resource = JSON.parse(line);
-			summarizeResource(resource, definitions, stratifyFn, summary, skipDetails);
-		});
-		lr.on('close', () => resolve(summary) );
-	});
-}
-
 function summarizeBundle(filePath, definitions, stratifyFn, summary={}, skipDetails) {
 	return new Promise( (resolve, reject) => {
 		try {
@@ -294,7 +276,14 @@ function summarizeBundle(filePath, definitions, stratifyFn, summary={}, skipDeta
 
 function summarizeNDJSON(filePath, definitions, stratifyFn, summary={}, skipDetails) {
 	return new Promise( (resolve, reject) => {
-		const lr = new LineByLineReader(filePath);
+		const rs = fs.createReadStream(filePath);
+		let lr;
+		if (filePath.slice(filePath.length-3) === ".gz") {
+			const gunzip = zlib.createGunzip();
+			lr = readline.createInterface(rs.pipe(gunzip));
+		} else {
+			lr = readline.createInterface({input: rs});
+		}
 		lr.on('error', err => {
 			lr.close();
 			reject(err);
@@ -303,8 +292,8 @@ function summarizeNDJSON(filePath, definitions, stratifyFn, summary={}, skipDeta
 			const resource = JSON.parse(line);
 			summarizeResource(resource, definitions, stratifyFn, summary, skipDetails);
 		});
-		lr.on('end', () => resolve(summary) );
+		lr.on('close', () => resolve(summary) );
 	});
 }
 
-module.exports = { pathToFhirType, summarizeResource, summarizeNDJSON, summarizeNDJSONGzip, summarizeBundle, flattenSummary, buildDefinitions };
+module.exports = { pathToFhirType, summarizeResource, summarizeNDJSON, summarizeBundle, flattenSummary, buildDefinitions };

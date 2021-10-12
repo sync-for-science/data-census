@@ -16,7 +16,6 @@
     "@oclif/command": "^1.8.0",
     "fhirpath": "^2.9.1",
     "glob": "^7.1.7",
-    "line-by-line": "^0.1.6",
     "listr": "^0.14.3",
     "lodash": "^4.17.20"
   },

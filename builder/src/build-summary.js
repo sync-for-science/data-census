@@ -91,17 +91,9 @@ class Summarize extends Command {
 			return {
 				title: _.last(filePath.split("/")), 
 				task: () => {
-					let summarizeFn;
-					switch (_.last(filePath.split("."))) {
-						case "ndjson":
-							summarizeFn = summarizer.summarizeNDJSON;
-							break;
-						case "gz":
-							summarizeFn = summarizer.summarizeNDJSONGzip;
-							break;
-						default:
-							summarizeFn = summarizer.summarizeBundle
-					}
+					const summarizeFn = _.last(filePath.split(".")) === "json" 
+						? summarizer.summarizeBundle
+						: summarizer.summarizeNDJSON;
 					return summarizeFn(filePath, definitions, stratificationFn, summary, flags.skip)
 						.then( fileSummary => summary = fileSummary );
 				}
