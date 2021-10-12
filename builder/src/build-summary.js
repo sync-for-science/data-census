@@ -34,7 +34,7 @@ function buildOutputPaths(rawPath) {
 function buildResourceFileList(rawPaths) {
 	let resourceFiles = [];
 	rawPaths.forEach( rawPath => {
-		if (["ndjson", "json"].indexOf(_.last(rawPath.split("."))) > -1) {
+		if (["ndjson", "json", "gz"].indexOf(_.last(rawPath.split("."))) > -1) {
 			const fullPath = makePathAbsolute(rawPath);
 			if (fs.existsSync(fullPath)) {
 				resourceFiles.push(fullPath);
@@ -43,7 +43,7 @@ function buildResourceFileList(rawPaths) {
 			}
 		} else {
 			const fullPath = makePathAbsolute(rawPath);
-			const files = glob.sync(path.join(fullPath, "/**/*.{json,ndjson}"), {});
+			const files = glob.sync(path.join(fullPath, "/**/*.{json,ndjson,gz}"), {});
 			resourceFiles = resourceFiles.concat(files)
 		}
 	});
@@ -67,7 +67,7 @@ class Summarize extends Command {
 			
 		//throw if no resource files
 		if (!resourceFiles.length) 
-			throw new Error("No resource files found. Ensure that your files have a .ndjson extension for bulk data and a .json extension for bundles");
+			throw new Error("No resource files found. Ensure that your files have a .ndjson or .gz extension for bulk data and a .json extension for bundles");
 
 		//throw if no output directory
 		if (!fs.existsSync(outputDir))
@@ -91,9 +91,17 @@ class Summarize extends Command {
 			return {
 				title: _.last(filePath.split("/")), 
 				task: () => {
-					const summarizeFn = _.last(filePath.split(".")) === "ndjson" 
-						? summarizer.summarizeNDJSON 
-						: summarizer.summarizeBundle;
+					let summarizeFn;
+					switch (_.last(filePath.split("."))) {
+						case "ndjson":
+							summarizeFn = summarizer.summarizeNDJSON;
+							break;
+						case "gz":
+							summarizeFn = summarizer.summarizeNDJSONGzip;
+							break;
+						default:
+							summarizeFn = summarizer.summarizeBundle
+					}
 					return summarizeFn(filePath, definitions, stratificationFn, summary, flags.skip)
 						.then( fileSummary => summary = fileSummary );
 				}
