@@ -37,7 +37,7 @@ Information from these reviews can then be used to:
 
 2. Clone this repository
 	```
-	git clone [github path]/bulk-census
+	git clone [github path]/data-census
 	```
 
 3. Install dependencies
