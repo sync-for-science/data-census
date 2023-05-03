@@ -1,21 +1,14 @@
 {
   "files": {
-    "main.css": "./static/css/main.0c5c8a84.chunk.css",
-    "main.js": "./static/js/main.e2b41ddb.chunk.js",
-    "main.js.map": "./static/js/main.e2b41ddb.chunk.js.map",
-    "runtime-main.js": "./static/js/runtime-main.c0cc1729.js",
-    "runtime-main.js.map": "./static/js/runtime-main.c0cc1729.js.map",
-    "static/js/2.e252a698.chunk.js": "./static/js/2.e252a698.chunk.js",
-    "static/js/2.e252a698.chunk.js.map": "./static/js/2.e252a698.chunk.js.map",
+    "main.css": "./static/css/main.e1878ec4.css",
+    "main.js": "./static/js/main.6b5dfb69.js",
+    "static/media/bulb.svg": "./static/media/bulb.e1d09e95557a016ff6d753da57485920.svg",
     "index.html": "./index.html",
-    "static/css/main.0c5c8a84.chunk.css.map": "./static/css/main.0c5c8a84.chunk.css.map",
-    "static/js/2.e252a698.chunk.js.LICENSE.txt": "./static/js/2.e252a698.chunk.js.LICENSE.txt",
-    "static/media/bulb.e1d09e95.svg": "./static/media/bulb.e1d09e95.svg"
+    "main.e1878ec4.css.map": "./static/css/main.e1878ec4.css.map",
+    "main.6b5dfb69.js.map": "./static/js/main.6b5dfb69.js.map"
   },
   "entrypoints": [
-    "static/js/runtime-main.c0cc1729.js",
-    "static/js/2.e252a698.chunk.js",
-    "static/css/main.0c5c8a84.chunk.css",
-    "static/js/main.e2b41ddb.chunk.js"
+    "static/css/main.e1878ec4.css",
+    "static/js/main.6b5dfb69.js"
   ]
 }
